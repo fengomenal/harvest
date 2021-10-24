@@ -4,9 +4,11 @@ RUN apk add build-base
 
 WORKDIR app
 
-ADD . .
+ADD Gemfile .
 
 RUN gem install bundler && \
   bundle install
+
+ADD . .
 
 CMD ["ruby", "-v"]
