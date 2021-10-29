@@ -11,7 +11,7 @@ module Harvest
     def select_query_str(table, target: '*', conditions: nil)
       base = "SELECT #{target} FROM #{table}"
       if conditions
-        base += "WHERE #{conditions.join(' ')}"
+        base += " WHERE #{conditions.join(' ')}"
       end
       base
     end
