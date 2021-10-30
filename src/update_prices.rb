@@ -12,7 +12,7 @@ ticker_rows = client.query("SELECT * FROM tickers")
 ticker_rows.each do |ticker_row|
   ticker = ticker_row['ticker']
   next unless ticker_row['active']
-  first = ticker_row['last_updated'] ? ticker_row['last_updated'].to_time.to_i + 86400 : 0
+  first = ticker_row['last_updated'] ? ticker_row['last_updated'].to_time.to_i : 0
   data = Harvest::Historical.get_prices(ticker, first, today)
   data.each do |row|
     row = Harvest::Historical.transform_to_row(ticker, row)
