@@ -7,13 +7,25 @@ require 'yaml'
 config = YAML.load(File.read("#{__dir__}/../config.yml"))['db']
 client = Harvest::DB.connect(config)
 
+failed = []
 today = Date.today.to_time.to_i
 ticker_rows = client.query("SELECT * FROM tickers")
 ticker_rows.each do |ticker_row|
   ticker = ticker_row['ticker']
   next unless ticker_row['active']
   first = ticker_row['last_updated'] ? ticker_row['last_updated'].to_time.to_i : 0
-  data = Harvest::Historical.get_prices(ticker, first, today)
+  begin
+    data = Harvest::Historical.get_prices(ticker, first, today)
+  rescue
+    failed << ticker
+    sleep 30
+    next
+  end
+  if data.nil?
+    failed << ticker
+    sleep 30
+    next
+  end
   data.each do |row|
     row = Harvest::Historical.transform_to_row(ticker, row)
     begin # update instead
@@ -24,3 +36,4 @@ ticker_rows.each do |ticker_row|
   client.query("UPDATE tickers SET last_updated='#{data[-1].split(',')[0]}' WHERE ticker='#{ticker}'")
 end
 
+STDOUT.puts "Update failed for #{failed}"
