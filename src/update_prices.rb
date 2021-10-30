@@ -9,15 +9,18 @@ client = Harvest::DB.connect(config)
 
 today = Date.today.to_time.to_i
 ticker_rows = client.query("SELECT * FROM tickers")
-ticker_rows.each do |ticker_row| #parallelize
+ticker_rows.each do |ticker_row|
   ticker = ticker_row['ticker']
   next unless ticker_row['active']
-  first = ticker_row['last_updated'] + 86400 #convert to i
+  first = ticker_row['last_updated'] ? ticker_row['last_updated'].to_time.to_i + 86400 : 0
   data = Harvest::Historical.get_prices(ticker, first, today)
   data.each do |row|
-    row = transform_to_row(data)
-    client.query(Harvest::DB.insert_query_str('historical', row))
+    row = Harvest::Historical.transform_to_row(ticker, row)
+    begin # update instead
+      client.query(Harvest::DB.insert_query_str('historical', row))
+    rescue
+    end
   end
-  client.query("UPDATE tickers SET last_updated=#{today} WHERE ticker=#{ticker}")
+  client.query("UPDATE tickers SET last_updated='#{data[-1].split(',')[0]}' WHERE ticker='#{ticker}'")
 end
 

@@ -12,9 +12,9 @@ module Harvest
       nil
     end
 
-    def transform_to_row(data)
+    def transform_to_row(ticker, data)
       cells = data.split(',')
-      [ Time.parse(cells[0]).to_i, cells[1..-2].map { |cell| cell.to_f }, cell[-1] ].flatten
+      [ "'#{ticker}'", "'#{Date.parse(cells[0]).strftime('%Y-%m-%d')}'", cells[1..-2].map { |cell| cell.to_f }, cells[-1] ].flatten
     end
   end
 end
