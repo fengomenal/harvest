@@ -9,7 +9,7 @@ clients = [ Harvest::DB.connect(config), Harvest::DB.connect(config) ]
 
 failed = []
 today = Date.today.to_time.to_i
-ticker_rows = clients[0].query("SELECT * FROM tickers").map { |r| r }.reverse
+ticker_rows = clients[0].query("SELECT * FROM tickers").map { |r| r }.sort_by { |row| row['last_updated'] }
 ticker_rows.each do |ticker_row|
   ticker = ticker_row['ticker']
   next unless ticker_row['active']
