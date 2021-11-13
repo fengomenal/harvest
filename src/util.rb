@@ -44,9 +44,10 @@ module Util
     value = 1.0
     performance = {}
     dates = positions.keys.sort
-    dates[0..-2].each_with_index do |date, index|
-      value = calculate_new_value(positions[date], price_history[date], price_history[dates[index + 1]])
-      performance[date] = value
+    dates[1..-1].each_with_index do |date, index|
+      start_date = dates[index]
+      value = value * calculate_new_value(positions[start_date], price_history[start_date], price_history[date])
+      performance[start_date] = value
     end
     performance
   end
