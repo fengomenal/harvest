@@ -1,3 +1,4 @@
+require 'json'
 require 'rest-client'
 require 'uri'
 
@@ -11,10 +12,10 @@ module Harvest
         session: 'NORMAL',
         duration: 'DAY',
         orderStrategyType: 'SINGLE',
+        price: price,
         orderLegCollection: [
           {
             instruction: instruction,
-            price: price,
             quantity: quantity,
             instrument: {
               symbol: symbol,

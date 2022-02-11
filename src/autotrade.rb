@@ -16,7 +16,7 @@ orders = []
 allocations.each do |symbol, allocation|
   dollar_amount = allocation * cash
   quote = JSON.parse(Harvest::TdaApi.get_quote(token, symbol).body)[symbol.to_s]
-  average_price = (quote['bidPrice'] + quote['askPrice']) / 2
+  average_price = (quote['bidPrice'] )#+ quote['askPrice']) / 2
   quantity = (dollar_amount / average_price).to_i
   next if quantity < 1
   orders << Harvest::Order.limit_equity(symbol, 'BUY', average_price, quantity)
