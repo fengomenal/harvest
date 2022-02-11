@@ -51,7 +51,7 @@ module Harvest
     def get_quote(token, symbol)
       RestClient::Request.execute(
         method: :GET,
-        url: "#{BASE_URL}/v1/marketdata/#{URI.www_form_encode_component(symbol)}/quotes",
+        url: "#{BASE_URL}/v1/marketdata/#{URI.encode_www_form_component(symbol)}/quotes",
         headers: {
           authorization: "Bearer #{token}"
         }
