@@ -11,4 +11,4 @@ RUN gem install bundler && \
 
 ADD . .
 
-CMD ["ruby", "-v"]
+ENTRYPOINT ["ruby", "-v"]
