@@ -8,4 +8,6 @@ require 'yaml'
 config = YAML.load(File.read("#{__dir__}/../config.yml"))['db']
 client = Harvest::DB.connect(config)
 
-STDOUT.puts client.query("SELECT COUNT(*) FROM tickers WHERE last_updated>'2022-02-10'").map { |i| i }
+STDOUT.puts 'UPDATED: ' + client.query("SELECT COUNT(*) FROM tickers WHERE last_updated>'2022-02-10'").map { |i| i }.to_s
+STDOUT.puts 'INACTIVE: ' + client.query("SELECT COUNT(*) FROM tickers WHERE active=FALSE").map { |i| i }.to_s
+
