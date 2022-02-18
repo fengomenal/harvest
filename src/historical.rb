@@ -7,9 +7,6 @@ module Harvest
     def get_prices(ticker, first, last)
       res = RestClient.get "https://query1.finance.yahoo.com/v7/finance/download/#{ticker}?period1=#{first}&period2=#{last}&interval=1d&events=history&includeAdjustedClose=true"
       res.body.split("\n")[1..-1]
-    rescue StandardError => e
-      STDOUT.puts e
-      nil
     end
 
     def transform_to_row(ticker, data)

@@ -8,7 +8,25 @@ require 'yaml'
 config = YAML.load(File.read("#{__dir__}/../config.yml"))['db']
 client = Harvest::DB.connect(config)
 
-tickers = client.query("SELECT ticker FROM tickers WHERE active=true AND last_updated>#{(Date.today - 30).to_s}").map { |i| i['ticker'] }
+as_of_date = Date.today - 15
+scaffold_ticker = 'KO'
+scaffold_dates = client.query(
+  "SELECT rec_date FROM historical WHERE ticker='#{scaffold_ticker}'"
+).map { |i| i['rec_date'] }.sort
+selected_dates = [scaffold_dates.first]
+scaffold_dates.each do |date|
+  next if date.month == selected_dates.last.month
+  selected_dates << date
+end
+
+selected_dates.each do |date|
+  data = client.query("SELECT ticker,adj_close FROM historical WHERE rec_date=#{date}").map { |i| i }
+  puts data.first
+  break
+end
+fail
+
+tickers = client.query("SELECT ticker FROM tickers WHERE active=true AND last_updated>#{as_of_date.to_s}").map { |i| i['ticker'] }
 
 count = 0
 max_tickers = 7

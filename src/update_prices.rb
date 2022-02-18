@@ -16,18 +16,18 @@ ticker_rows.each do |ticker_row|
   ticker = ticker_row['ticker']
   data = nil
   next if ticker_row['active'].zero?
-  STDOUT.puts ticker
   first = ticker_row['last_updated'] ? ticker_row['last_updated'].to_time.to_i : 0
   begin
     data = Harvest::Historical.get_prices(ticker, first, today)
-  rescue
+    STDOUT.puts "#{ticker}: #{data.size} new rows"
+  rescue StandardError => e
+    STDOUT.puts "#{ticker}: #{e.to_s}"
+    clients.first.query("UPDATE tickers SET active=FALSE WHERE ticker='#{ticker}'") if e.to_s.include?('404')
+    failed << ticker
+    sleep 15
+    next
   ensure
-    if data.nil?
-      clients.first.query("UPDATE tickers SET active=FALSE WHERE ticker='#{ticker}'")
-      failed << ticker
-      sleep 15
-      next
-    end
+    next if data.nil?
   end
   Parallel.each(data, in_threads: 2) do |row|
     row = Harvest::Historical.transform_to_row(ticker, row)
