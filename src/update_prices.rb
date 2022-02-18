@@ -37,6 +37,7 @@ ticker_rows.each do |ticker_row|
     end
   end
   clients[0].query("UPDATE tickers SET last_updated='#{data[-1].split(',')[0]}' WHERE ticker='#{ticker}'")
+  sleep 5 if data.size < 50
 end
 
 STDOUT.puts "Update failed for #{failed}"
