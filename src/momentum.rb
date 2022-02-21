@@ -19,21 +19,22 @@ scaffold_dates.each do |date|
   selected_dates << date
 end
 
-selected_dates.each do |date|
-  data = client.query("SELECT ticker,adj_close FROM historical WHERE rec_date=#{date}").map { |i| i }
-  puts data.first
-  break
+selected_dates = selected_dates[0..10]
+
+rebalanced_portfolio = {}
+
+
+prev_period_data = client.query("SELECT ticker,adj_close FROM historical WHERE rec_date='#{selected_dates[0]}'").map { |i| i }
+period_data = nil
+selected_dates[1..-1].each do |date|
+  period_data = client.query("SELECT ticker,adj_close FROM historical WHERE rec_date='#{date}'").map { |i| i }
+  rebalanced_portfolio.each do |ticker, |
+    
+  end
+  prev_period_data = period_data
 end
 fail
 
-tickers = client.query("SELECT ticker FROM tickers WHERE active=true AND last_updated>#{as_of_date.to_s}").map { |i| i['ticker'] }
-
-count = 0
-max_tickers = 7
-min_window = 4000
-start_cutoff = Date.today - min_window
-cutoff_str = start_cutoff.to_s
-historical = {}
 tickers = ["NRP", "LGO", "ARMP", "ACTG", "MTA", "AAPL", "A"]
 tickers.shuffle.each do |ticker|
   data = client.query("SELECT rec_date,adj_close FROM historical WHERE ticker='#{ticker}'").sort { |i| i['rec_date'] }.reverse
